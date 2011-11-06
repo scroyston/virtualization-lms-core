@@ -15,6 +15,7 @@ trait CudaCodegen extends GPUCodegen {
   override def toString = "cuda"
 
   override def initializeGenerator(buildDir:String, args: Array[String], _analysisResults: MMap[String,Any]): Unit = {
+
     val outDir = new File(buildDir)
     outDir.mkdirs
     helperFuncIdx = 0
@@ -130,7 +131,7 @@ trait CudaCodegen extends GPUCodegen {
   */
 
   override def remap[A](m: Manifest[A]) : String = {
-    //checkGPUableType(m)
+    checkGPUableType(m)
     if (m.erasure == classOf[Variable[AnyVal]])
       remap(m.typeArguments.head)
     else {
@@ -142,8 +143,7 @@ trait CudaCodegen extends GPUCodegen {
           case "Boolean" => "bool"
           case "Unit" => "void"
           case "scala.collection.immutable.List[Int]" => "CudaArrayList<int>"  //TODO: Use C++ list
-          //case _ => throw new Exception("CudaGen: remap(m) : GPUable Type %s does not have mapping table.".format(m.toString))
-          case _ => throw new GenerationFailedException("CudaGen: remap(m) : GPUable Type %s does not have mapping table.".format(m.toString))
+          case _ => throw new Exception("CudaGen: remap(m) : GPUable Type %s does not have mapping table.".format(m.toString))
       }
     }
   }
